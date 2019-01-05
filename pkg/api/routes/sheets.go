@@ -21,6 +21,7 @@ type sheetsHandler struct {
 
 func (sh *sheetsHandler) RegisterTo(r *hr.Router) {
 	r.GET("/sheets/:cik/:accNum", sh.Handle)
+	r.GET("/sheets/:cik/:accNum/", handleTrailingSlashRedir)
 }
 
 func (sh *sheetsHandler) Handle(w http.ResponseWriter, _ *http.Request,

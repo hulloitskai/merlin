@@ -160,6 +160,8 @@ func parseBSRow(row *gq.Selection, sheets balance.Sheets,
 				err = errors.New("name cell is empty")
 				return false
 			}
+			// Normalize quotations.
+			template.Name = strings.Replace(template.Name, "’", "'", -1)
 
 			// Parse trailing note tag.
 			// TODO: Figure out how to parse multiple note tags.

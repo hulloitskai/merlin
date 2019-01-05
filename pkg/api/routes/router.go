@@ -24,9 +24,13 @@ func NewRouter(cfg *Config) (*Router, error) {
 		cfg.Logger = zap.NewNop().Sugar()
 	}
 
+	// Make and configure httprouter.Router.
+	hr := httprouter.New()
+	hr.RedirectTrailingSlash = false
+
 	r := &Router{
 		Config: cfg,
-		hr:     *httprouter.New(),
+		hr:     *hr,
 	}
 	r.registerRoutes()
 	return r, nil
