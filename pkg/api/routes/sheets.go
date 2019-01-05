@@ -46,5 +46,5 @@ func (sh *sheetsHandler) Handle(w http.ResponseWriter, _ *http.Request,
 		return
 	}
 
-	rw.WriteJSON(&sheets)
+	rw.WriteJSON(sheets)
 }

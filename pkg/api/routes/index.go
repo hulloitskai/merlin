@@ -29,7 +29,7 @@ type indexHandler struct {
 
 func newIndexHandler(logger *zap.SugaredLogger) *indexHandler {
 	info := apiInfo{
-		ID:      fmt.Sprintf("%s-%s", info.Namespace, info.Version),
+		ID:      fmt.Sprintf("%s-api-%s", info.Namespace, info.Version),
 		Version: info.Version,
 	}
 	return &indexHandler{

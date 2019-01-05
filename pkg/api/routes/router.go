@@ -44,4 +44,5 @@ func (r *Router) registerRoutes() {
 	router := &r.hr
 	registerIndex(router, r.Config.Logger.Named("index"))
 	registerSheets(router, r.Config.Scraper, r.Config.Logger.Named("sheets"))
+	registerNotes(router, r.Config.Scraper, r.Config.Logger.Named("notes"))
 }

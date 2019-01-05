@@ -3,7 +3,6 @@ package scrape
 import (
 	"errors"
 	"fmt"
-	"net/url"
 	"strconv"
 	"strings"
 
@@ -205,40 +204,16 @@ func (s *Scraper) getBSDoc(cik, accNum string) (*gq.Document, error) {
 	if err != nil {
 		return nil, ess.AddCtx("deriving balance sheet URL", err)
 	}
-
-	res, err := s.Client.Get(uri)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	doc, err := gq.NewDocumentFromReader(res.Body)
-	if err != nil {
-		return nil, ess.AddCtx("parsing response body with goquery", err)
-	}
-
-	err = res.Body.Close()
-	return doc, ess.AddCtx("closing response body", err)
+	return s.readDocumentAt(uri)
 }
 
 // deriveBSURL looks up the filing associated with cik and accNum on the
 // EDGAR viewer, and attempts to derive the corresponding balance sheet URL.
 func (s *Scraper) deriveBSURL(cik, accNum string) (uri string,
 	err error) {
-	// Create viewer URI.
-	u, err := url.Parse(edgarViewerURL)
-	if err != nil {
-		panic(err)
-	}
-
-	params := u.Query()
-	params.Set("action", "view")
-	params.Set("cik", cik)
-	params.Set("accession_number", accNum)
-	u.RawQuery = params.Encode()
-
 	// Perform request.
-	res, err := s.Client.Get(u.String())
+	u := makeViewerURL(cik, accNum)
+	res, err := s.Client.Get(u)
 	if err != nil {
 		return "", ess.AddCtx("getting EDGAR viewer", err)
 	}
