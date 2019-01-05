@@ -1,0 +1,36 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: merlin-api
+  namespace: default
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: merlin-api
+      tier: backend
+      track: stable
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: merlin-api
+        tier: backend
+        track: stable
+    spec:
+      containers:
+        - name: merlin-api
+          image: "stevenxie/merlin.api"
+          imagePullPolicy: Always
+          ports:
+            - name: api
+              containerPort: 3000

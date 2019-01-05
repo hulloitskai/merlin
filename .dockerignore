@@ -1,0 +1,57 @@
+## [Repository]
+/*merlin*
+!/*merlin*.*
+/*merlin*.exe
+
+## Client:
+/client/dist/
+/client/node_modules/
+
+## Secrets:
+.env
+
+
+## [Go]
+/dist/
+coverage.out
+
+
+## [JS]
+jsconfig.json
+
+
+## [Git]
+.gitignore
+
+## git-secret:
+.gitsecret/
+*.secret
+
+
+## [Docker]
+.dockerignore
+
+
+## [Miscellaneous]
+.editorconfig
+README.md
+
+
+## [System Files]
+## macOS:
+.DS_Store
+.DS_Store?
+*.swp
+
+## Windows:
+Thumbs.db
+
+## VSCode (keeping workspace configurations):
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+#!.vscode/launch.json
+!.vscode/extensions.json
+
+## IntelliJ
+.idea/

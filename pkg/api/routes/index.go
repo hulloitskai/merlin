@@ -45,6 +45,7 @@ func (ih *indexHandler) Info() *apiInfo {
 
 func (ih *indexHandler) RegisterTo(r *hr.Router) {
 	r.GET("/", ih.Handle)
+	r.HEAD("/", ih.Handle)
 }
 
 func (ih *indexHandler) Handle(w http.ResponseWriter, _ *http.Request,

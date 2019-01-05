@@ -21,7 +21,7 @@ GORELEASER = false
 SECRETS    = false
 
 ## Custom Go linker flags:
-LDFLAGS = -X github.com/stevenxie/$(PKG_NAME)/internal.Version=$(VERSION)
+LDFLAGS = -X github.com/stevenxie/$(PKG_NAME)/internal/info.Version=$(VERSION)
 
 
 ## Testing config:
@@ -370,7 +370,7 @@ dk-retag:
 	@$(DK_RETAG_CMD)
 
 dk-up:
-	@echo "Bringing up services..." && $(DKCMP_ENV) up -d ($SVC) && echo done
+	@echo "Bringing up services..." && $(DKCMP_ENV) up -d $(SVC) && echo done
 
 dk-build-up:
 	@echo "Building and bringing up services..." && \

@@ -1,0 +1,20 @@
+---
+
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: merlin-api
+  namespace: default
+
+spec:
+  type: ClusterIP
+  selector:
+    app: merlin-api
+    tier: backend
+    track: stable
+  ports:
+    - name: api
+      protocol: TCP
+      port: 3000
+      targetPort: api

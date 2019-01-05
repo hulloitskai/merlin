@@ -34,7 +34,7 @@ func init() {
 // Exec is the entrypoint to command rgv.
 func Exec() {
 	if opts.ShowHelp {
-		pflag.Usage()
+		showHelp()
 		os.Exit(0)
 	}
 	if opts.ShowVersion {
