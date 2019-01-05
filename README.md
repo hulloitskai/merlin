@@ -1,6 +1,6 @@
 # merlin
 
-[![Github Release][releases-img]][releases]
+[![Github: Tag][tag-img]][tag]
 [![Travis: Build][travis-img]][travis]
 [![Go Report Card][grp-img]][grp]
 
@@ -21,12 +21,14 @@ _A system for accessing company finance data from
 
 ## TODOs
 
+- [x] Add an endpoint for parsing a balance sheet corresponding to a CIK +
+      accNum.
 - [ ] Add an endpoint for mapping tickers to CIKs.
 - [ ] Add an endpoint for listing accNums for a given CIK.
 - [ ] Add result caching using Redis to improve speeds.
 
-[releases]: https://github.com/stevenxie/merlin/releases
-[releases-img]: https://img.shields.io/github/release/stevenxie/merlin.svg
+[tag]: https://github.com/stevenxie/merlin/releases
+[tag-img]: https://img.shields.io/github/tag/stevenxie/merlin.svg
 [travis]: https://travis-ci.com/stevenxie/merlin
 [travis-img]: https://travis-ci.com/stevenxie/merlin.svg?branch=master
 [grp]: https://goreportcard.com/report/github.com/stevenxie/merlin
