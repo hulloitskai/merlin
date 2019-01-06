@@ -43,6 +43,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 func (r *Router) registerRoutes() {
 	router := &r.hr
 	registerIndex(router, r.Config.Logger.Named("index"))
+	registerFilings(router, r.Config.Scraper, r.Config.Logger.Named("filings"))
 	registerSheets(router, r.Config.Scraper, r.Config.Logger.Named("sheets"))
 	registerNotes(router, r.Config.Scraper, r.Config.Logger.Named("notes"))
 }

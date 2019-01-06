@@ -13,11 +13,12 @@ _A system for accessing company finance data from
 
 ## API
 
-| Endpoint               | Description                                              |
-| ---------------------- | -------------------------------------------------------- |
-| `/`                    | API server information.                                  |
-| `/sheets/:cik/:accNum` | Balance sheet data for a given CIK and accession number. |
-| `/notes/:cik/:accNum`  | Financial notes for a given CIK and accession number.    |
+| Endpoint               | Description                                                     |
+| ---------------------- | --------------------------------------------------------------- |
+| `/`                    | API server information.                                         |
+| `/filings/:ticker`     | Company filings (CIK and accession numbers) for a given ticker. |
+| `/sheets/:cik/:accNum` | Balance sheet data for a given CIK and accession number.        |
+| `/notes/:cik/:accNum`  | Financial notes for a given CIK and accession number.           |
 
 > When accessing `merlin` on the production server at
 > https://merlin.stevenxie.me, all API requests must be prefixed with `/api`.
@@ -25,6 +26,25 @@ _A system for accessing company finance data from
 > For example, to access the API root (`/`), one would visit `/api/` instead.
 
 ### Examples
+
+#### Company Filings:
+
+> `GET` https://merlin.stevenxie.me/api/filings/MSFT
+
+```jsonc
+{
+  "CIK": "0000789019",
+  "filings": [
+    {
+      "type": "8-K",
+      "description": "Current report",
+      "date": "2018-11-29",
+      "accessionNumber": "0001193125-18-337951"
+    }
+    // ...
+  ]
+}
+```
 
 #### Balance Sheets:
 
@@ -41,10 +61,6 @@ _A system for accessing company finance data from
         {
           "name": "Cash and cash equivalents",
           "value": "$ 3,367,914"
-        },
-        {
-          "name": "Restricted cash",
-          "value": "155,323"
         }
         // ...
       ]
@@ -64,11 +80,6 @@ _A system for accessing company finance data from
     "id": 1,
     "title": "Overview",
     "link": "https://www.sec.gov/Archives/edgar/data/1318605/000156459018002956/R9.htm"
-  },
-  {
-    "id": 2,
-    "title": "Summary of Significant Accounting Policies",
-    "link": "https://www.sec.gov/Archives/edgar/data/1318605/000156459018002956/R10.htm"
   }
   // ...
 ]

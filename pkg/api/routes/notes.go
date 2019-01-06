@@ -10,8 +10,8 @@ import (
 )
 
 func registerNotes(r *hr.Router, s Scraper, logger *zap.SugaredLogger) {
-	sh := &notesHandler{Scraper: s, l: logger}
-	sh.RegisterTo(r)
+	nh := &notesHandler{Scraper: s, l: logger}
+	nh.RegisterTo(r)
 }
 
 type notesHandler struct {
@@ -19,29 +19,29 @@ type notesHandler struct {
 	l *zap.SugaredLogger
 }
 
-func (sh *notesHandler) RegisterTo(r *hr.Router) {
-	r.GET("/notes/:cik/:accNum", sh.Handle)
+func (nh *notesHandler) RegisterTo(r *hr.Router) {
+	r.GET("/notes/:cik/:accNum", nh.Handle)
 	r.GET("/notes/:cik/:accNum/", handleTrailingSlashRedir)
 }
 
-func (sh *notesHandler) Handle(w http.ResponseWriter, _ *http.Request,
+func (nh *notesHandler) Handle(w http.ResponseWriter, _ *http.Request,
 	params hr.Params) {
 	var (
 		cik        = params.ByName("cik")
 		accNum     = params.ByName("accNum")
-		notes, err = sh.ScrapeFinanceNotes(cik, accNum)
+		notes, err = nh.ScrapeFinanceNotes(cik, accNum)
 		rw         = responseWriter{w}
 	)
 
 	if err != nil {
-		sh.l.Debugf("Error while scraping finance notes for cik='%s', "+
+		nh.l.Debugf("Error while scraping finance notes for cik='%s', "+
 			"accNum='%s': %v", cik, accNum, err)
 
 		w.WriteHeader(http.StatusInternalServerError)
 		ess.AddCtxTo("routes: scraping finance notes", &err)
 		jerr := jsonErrorFrom(err)
 		if err = rw.WriteJSON(&jerr); err != nil {
-			sh.l.Errorf("Error writing JSON response: %v", err)
+			nh.l.Errorf("Error writing JSON response: %v", err)
 		}
 		return
 	}

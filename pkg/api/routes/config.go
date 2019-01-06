@@ -16,4 +16,5 @@ type Config struct {
 type Scraper interface {
 	ScrapeBalanceSheets(cik, accNum string) (balance.Sheets, error)
 	ScrapeFinanceNotes(cik, accNum string) (models.Notes, error)
+	ScrapeFilings(ticker string) (*models.FilingResults, error)
 }

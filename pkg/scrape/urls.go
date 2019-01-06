@@ -5,6 +5,7 @@ import "net/url"
 const (
 	edgarDataURL   = "https://www.sec.gov/Archives/edgar/data"
 	edgarViewerURL = "https://www.sec.gov/cgi-bin/viewer"
+	edgarBrowseURL = "https://www.sec.gov/cgi-bin/browse-edgar"
 )
 
 func makeViewerURL(cik, accNum string) string {
