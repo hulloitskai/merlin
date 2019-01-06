@@ -50,8 +50,6 @@ func (ih *indexHandler) RegisterTo(r *hr.Router) {
 
 func (ih *indexHandler) Handle(w http.ResponseWriter, _ *http.Request,
 	_ hr.Params) {
-	rw := responseWriter{w}
-	if err := rw.WriteJSON(ih.Info()); err != nil {
-		ih.l.Errorf("Error writing JSON response: %v", err)
-	}
+	rw := responseWriter{w, ih.l}
+	rw.WriteJSON(ih.Info())
 }

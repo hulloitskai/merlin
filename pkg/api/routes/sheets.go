@@ -30,20 +30,18 @@ func (sh *sheetsHandler) Handle(w http.ResponseWriter, _ *http.Request,
 		cik         = params.ByName("cik")
 		accNum      = params.ByName("accNum")
 		sheets, err = sh.ScrapeBalanceSheets(cik, accNum)
-		rw          = responseWriter{w}
+		rw          = responseWriter{w, sh.l}
 	)
 
 	if err != nil {
 		sh.l.Debugf("Error while scraping balance sheets for cik='%s', "+
 			"accNum='%s': %v", cik, accNum, err)
-
-		w.WriteHeader(http.StatusInternalServerError)
 		ess.AddCtxTo("routes: scraping balance sheets", &err)
-		jerr := jsonErrorFrom(err)
-		if err = rw.WriteJSON(&jerr); err != nil {
-			sh.l.Errorf("Error writing JSON response: %v", err)
-		}
-		return
+
+		code := http.StatusInternalServerError
+		w.WriteHeader(code)
+		jerr := jsonErrorFrom(err, code)
+		rw.WriteJSON(&jerr)
 	}
 
 	rw.WriteJSON(sheets)

@@ -106,8 +106,8 @@ _A system for accessing company finance data from
 - [x] Add an endpoint for parsing financial notes corresponding to a CIK +
       accession number.
 - [x] Add sample frontend.
-- [ ] Add an endpoint for mapping tickers to CIKs.
-- [ ] Add an endpoint for listing accNums for a given CIK.
+- [x] Add an endpoint for mapping tickers to CIKs.
+- [x] Add an endpoint for listing accNums for a given CIK.
 - [ ] Add result caching using Redis to improve speeds.
 
 [tag]: https://github.com/stevenxie/merlin/releases

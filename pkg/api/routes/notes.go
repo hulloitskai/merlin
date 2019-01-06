@@ -30,19 +30,18 @@ func (nh *notesHandler) Handle(w http.ResponseWriter, _ *http.Request,
 		cik        = params.ByName("cik")
 		accNum     = params.ByName("accNum")
 		notes, err = nh.ScrapeFinanceNotes(cik, accNum)
-		rw         = responseWriter{w}
+		rw         = responseWriter{w, nh.l}
 	)
 
 	if err != nil {
 		nh.l.Debugf("Error while scraping finance notes for cik='%s', "+
 			"accNum='%s': %v", cik, accNum, err)
-
-		w.WriteHeader(http.StatusInternalServerError)
 		ess.AddCtxTo("routes: scraping finance notes", &err)
-		jerr := jsonErrorFrom(err)
-		if err = rw.WriteJSON(&jerr); err != nil {
-			nh.l.Errorf("Error writing JSON response: %v", err)
-		}
+
+		code := http.StatusInternalServerError
+		w.WriteHeader(code)
+		jerr := jsonErrorFrom(err, code)
+		rw.WriteJSON(&jerr)
 		return
 	}
 

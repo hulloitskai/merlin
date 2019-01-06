@@ -32,7 +32,7 @@ func (fh *filingsHandler) RegisterTo(r *hr.Router) {
 func (fh *filingsHandler) Handle(w http.ResponseWriter, r *http.Request,
 	params hr.Params) {
 	var (
-		rw      = responseWriter{w}
+		rw      = responseWriter{w, fh.l}
 		res, ok = fh.partiallyHandle(&rw, r, params)
 	)
 	if !ok {
@@ -44,7 +44,7 @@ func (fh *filingsHandler) Handle(w http.ResponseWriter, r *http.Request,
 func (fh *filingsHandler) HandleLatest10K(w http.ResponseWriter,
 	r *http.Request, params hr.Params) {
 	var (
-		rw      = responseWriter{w}
+		rw      = responseWriter{w, fh.l}
 		res, ok = fh.partiallyHandle(&rw, r, params)
 	)
 	if !ok {
@@ -69,13 +69,26 @@ func (fh *filingsHandler) partiallyHandle(rw *responseWriter, _ *http.Request,
 	if err != nil {
 		fh.l.Debugf("Error while scraping company filings for ticker='%s': %v",
 			ticker, err)
-
-		rw.WriteHeader(http.StatusInternalServerError)
 		ess.AddCtxTo("routes: scraping company filings", &err)
-		jerr := jsonErrorFrom(err)
-		if err = rw.WriteJSON(&jerr); err != nil {
-			fh.l.Errorf("Error writing JSON response: %v", err)
+
+		// Check if is a Content-Type error; if it is, then we assume that an
+		// invalid ticker was provided.
+		var (
+			code = http.StatusInternalServerError
+			desc string
+		)
+		if strings.Contains(err.Error(), "Content-Type") {
+			code = http.StatusBadRequest
+			desc = "Provided ticker is likely invalid."
 		}
+
+		rw.WriteHeader(code)
+		jerr := jsonErrorFrom(err, code)
+		if desc != "" {
+			jerr.Desc = desc
+		}
+
+		rw.WriteJSON(&jerr)
 		return nil, false
 	}
 

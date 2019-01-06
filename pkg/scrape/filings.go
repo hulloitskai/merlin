@@ -34,6 +34,12 @@ func (s *Scraper) ScrapeFilings(ticker string) (*models.FilingResults, error) {
 	}
 	defer res.Body.Close()
 
+	ctype := res.Header.Get("Content-Type")
+	if ctype != "application/xml" {
+		return nil, fmt.Errorf("scrape: server did not respond with XML "+
+			"(Content-Type='%s')", ctype)
+	}
+
 	// Decode XML from response body.
 	var result struct {
 		CIK     string `xml:"companyInfo>CIK"`
