@@ -13,7 +13,7 @@ env:
   ##   - DOCKER_USER, DOCKER_PASS
   ##   - GH_TOKEN, GH_KUBECONFIG_PATH
   global:
-    - DEPLOYMENTS="merlin-api"
+    - DEPLOYMENTS="merlin-api merlin-frontend"
     - RELEASE_BRANCH=master
 
     - DOCKER_COMPOSE_VERSION="1.23.2"

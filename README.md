@@ -7,6 +7,10 @@
 _A system for accessing company finance data from
 [EDGAR](https://www.sec.gov/edgar/aboutedgar.htm)._
 
+| Deployment                  | API                             |
+| --------------------------- | ------------------------------- |
+| https://merlin.stevenxie.me | https://merlin.stevenxie.me/api |
+
 ## API
 
 | Endpoint               | Description                                              |
@@ -22,9 +26,9 @@ _A system for accessing company finance data from
 
 ### Examples
 
-| Balance Sheets                                                            |
-| ------------------------------------------------------------------------- |
-| `GET` https://merlin.stevenxie.me/api/sheets/1318605/0001564590-18-002956 |
+#### Balance Sheets:
+
+> `GET` https://merlin.stevenxie.me/api/sheets/1318605/0001564590-18-002956
 
 ```jsonc
 [
@@ -50,11 +54,9 @@ _A system for accessing company finance data from
 ]
 ```
 
-<br />
+#### Financial Notes:
 
-| Financial Notes                                                          |
-| ------------------------------------------------------------------------ |
-| `GET` https://merlin.stevenxie.me/api/notes/1318605/0001564590-18-002956 |
+> `GET` https://merlin.stevenxie.me/api/notes/1318605/0001564590-18-002956
 
 ```jsonc
 [
@@ -80,6 +82,7 @@ _A system for accessing company finance data from
       accession number.
 - [x] Add an endpoint for parsing financial notes corresponding to a CIK +
       accession number.
+- [x] Add sample frontend.
 - [ ] Add an endpoint for mapping tickers to CIKs.
 - [ ] Add an endpoint for listing accNums for a given CIK.
 - [ ] Add result caching using Redis to improve speeds.
