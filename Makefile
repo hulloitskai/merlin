@@ -231,13 +231,13 @@ install:
 ## [Go: code checking]
 .PHONY: fmt lint vet check
 
-## Formats the source code using "gofmt".
+## Formats the source code using "goimports".
 FMT_CMD = \
-	if ! command -v gofmt > /dev/null; then \
-	  echo '"gofmt" is required to format source code.'; \
+	if ! command -v goimports > /dev/null; then \
+	  echo '"goimports" is required to format source code.'; \
 	else \
-	  echo 'Formatting source code using "gofmt"...' && \
-	  gofmt -l -s -w . && echo "done"; \
+	  echo 'Formatting source code using "goimports"...' && \
+	  goimports -l -w . && echo "done"; \
 	fi
 fmt:
 	@$(FMT_CMD)

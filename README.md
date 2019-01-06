@@ -13,13 +13,13 @@ _A system for accessing company finance data from
 
 ## API
 
-| Endpoint                     | Description                                                     |
-| ---------------------------- | --------------------------------------------------------------- |
-| `/`                          | API server information.                                         |
-| `/filings/:ticker/`          | Company filings (CIK and accession numbers) for a given ticker. |
-| `/filings/:ticker/latest10k` | Latest 10-K filing for a given ticker.                          |
-| `/sheets/:cik/:accNum`       | Balance sheet data for a given CIK and accession number.        |
-| `/notes/:cik/:accNum`        | Financial notes for a given CIK and accession number.           |
+| Endpoint                      | Description                                                     |
+| ----------------------------- | --------------------------------------------------------------- |
+| `/`                           | API server information.                                         |
+| `/filings/:ticker/`           | Company filings (CIK and accession numbers) for a given ticker. |
+| `/filings/:ticker/latest/10k` | Latest 10-K filing for a given ticker.                          |
+| `/sheets/:cik/:accNum`        | Balance sheet data for a given CIK and accession number.        |
+| `/notes/:cik/:accNum`         | Financial notes for a given CIK and accession number.           |
 
 > When accessing `merlin` on the production server at
 > https://merlin.stevenxie.me, all API requests must be prefixed with `/api`.
@@ -47,7 +47,7 @@ _A system for accessing company finance data from
 }
 ```
 
-`GET` https://merlin.stevenxie.me/api/filings/MSFT/latest10k
+`GET` https://merlin.stevenxie.me/api/filings/MSFT/latest/10k
 
 ```jsonc
 {
@@ -111,7 +111,17 @@ _A system for accessing company finance data from
 - [x] Add sample frontend.
 - [x] Add an endpoint for mapping tickers to CIKs.
 - [x] Add an endpoint for listing accNums for a given CIK.
+- [ ] Try a new information extraction strategy using XLSX financial reports
+      ([like this](https://www.sec.gov/Archives/edgar/data/789019/000119312516662209/)).
 - [ ] Add result caching using Redis to improve speeds.
+
+## Further Notices
+
+- Not all balance sheets can be parsed properly using the current strategy,
+  see https://www.sec.gov/Archives/edgar/data/789019/000119312516662209/R5.htm
+  (notice the inconsistent column count). This can be caught with either
+  using right-delta indexes when counting date columns, or with XLSX parsing
+  to gain more contextual information about the table.
 
 [tag]: https://github.com/stevenxie/merlin/releases
 [tag-img]: https://img.shields.io/github/tag/stevenxie/merlin.svg

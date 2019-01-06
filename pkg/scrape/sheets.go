@@ -190,6 +190,12 @@ func parseBSRow(row *gq.Selection, sheets balance.Sheets,
 		// Is value cell.
 		item := template // copy template
 		item.Value = strings.TrimSpace(cell.Text())
+
+		// FIXME: Date-column based parsing breaks on oddly formatted balance
+		// sheets (where the header / date row has different columns from the rest
+		// of the sheet).
+		//
+		// See https://www.sec.gov/Archives/edgar/data/789019/000119312516662209/R5.htm
 		sheets[i-1].AddItem(sec, &item)
 		return true
 	})

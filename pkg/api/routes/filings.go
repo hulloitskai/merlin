@@ -4,11 +4,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/stevenxie/merlin/pkg/models"
-
 	"go.uber.org/zap"
 
 	hr "github.com/julienschmidt/httprouter"
+	"github.com/stevenxie/merlin/pkg/models"
 	ess "github.com/unixpickle/essentials"
 )
 
@@ -25,8 +24,8 @@ type filingsHandler struct {
 func (fh *filingsHandler) RegisterTo(r *hr.Router) {
 	r.GET("/filings/:ticker", handleTrailingSlashRedir)
 	r.GET("/filings/:ticker/", fh.Handle)
-	r.GET("/filings/:ticker/latest10k", fh.HandleLatest10K)
-	r.GET("/filings/:ticker/latest10k/", handleTrailingSlashRedir)
+	r.GET("/filings/:ticker/latest/10k", fh.HandleLatest10K)
+	r.GET("/filings/:ticker/latest/10k/", handleTrailingSlashRedir)
 }
 
 func (fh *filingsHandler) Handle(w http.ResponseWriter, r *http.Request,
