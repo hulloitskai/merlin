@@ -13,12 +13,13 @@ _A system for accessing company finance data from
 
 ## API
 
-| Endpoint               | Description                                                     |
-| ---------------------- | --------------------------------------------------------------- |
-| `/`                    | API server information.                                         |
-| `/filings/:ticker`     | Company filings (CIK and accession numbers) for a given ticker. |
-| `/sheets/:cik/:accNum` | Balance sheet data for a given CIK and accession number.        |
-| `/notes/:cik/:accNum`  | Financial notes for a given CIK and accession number.           |
+| Endpoint                     | Description                                                     |
+| ---------------------------- | --------------------------------------------------------------- |
+| `/`                          | API server information.                                         |
+| `/filings/:ticker/`          | Company filings (CIK and accession numbers) for a given ticker. |
+| `/filings/:ticker/latest10k` | Latest 10-K filing for a given ticker.                          |
+| `/sheets/:cik/:accNum`       | Balance sheet data for a given CIK and accession number.        |
+| `/notes/:cik/:accNum`        | Financial notes for a given CIK and accession number.           |
 
 > When accessing `merlin` on the production server at
 > https://merlin.stevenxie.me, all API requests must be prefixed with `/api`.
@@ -29,7 +30,7 @@ _A system for accessing company finance data from
 
 #### Company Filings:
 
-> `GET` https://merlin.stevenxie.me/api/filings/MSFT
+> `GET` https://merlin.stevenxie.me/api/filings/MSFT/
 
 ```jsonc
 {
@@ -43,6 +44,17 @@ _A system for accessing company finance data from
     }
     // ...
   ]
+}
+```
+
+> `GET` https://merlin.stevenxie.me/api/filings/MSFT/latest10k
+
+```jsonc
+{
+  "type": "10-K",
+  "description": "Annual report [Section 13 and 15(d), not S-K Item 405]",
+  "date": "2016-07-28",
+  "accessionNumber": "0001193125-16-662209"
 }
 ```
 
