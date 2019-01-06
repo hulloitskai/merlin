@@ -52,13 +52,17 @@ func (fh *filingsHandler) HandleLatest10K(w http.ResponseWriter,
 	}
 
 	// Find first filing of type 10-K.
-	var f10k *models.Filing
+	var f10k struct {
+		CIK           string
+		models.Filing `json:"filing"`
+	}
+	f10k.CIK = res.CIK
 	for _, filing := range res.Filings {
 		if strings.ToLower(filing.Type) == "10-k" {
-			f10k = filing
+			f10k.Filing = *filing
 		}
 	}
-	rw.WriteJSON(f10k)
+	rw.WriteJSON(&f10k)
 }
 
 func (fh *filingsHandler) partiallyHandle(rw *responseWriter, _ *http.Request,

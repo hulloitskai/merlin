@@ -30,7 +30,7 @@ _A system for accessing company finance data from
 
 #### Company Filings:
 
-> `GET` https://merlin.stevenxie.me/api/filings/MSFT/
+`GET` https://merlin.stevenxie.me/api/filings/MSFT/
 
 ```jsonc
 {
@@ -47,20 +47,23 @@ _A system for accessing company finance data from
 }
 ```
 
-> `GET` https://merlin.stevenxie.me/api/filings/MSFT/latest10k
+`GET` https://merlin.stevenxie.me/api/filings/MSFT/latest10k
 
 ```jsonc
 {
-  "type": "10-K",
-  "description": "Annual report [Section 13 and 15(d), not S-K Item 405]",
-  "date": "2016-07-28",
-  "accessionNumber": "0001193125-16-662209"
+  "CIK": "0000789019",
+  "filing": {
+    "type": "10-K",
+    "description": "Annual report [Section 13 and 15(d), not S-K Item 405]",
+    "date": "2016-07-28",
+    "accessionNumber": "0001193125-16-662209"
+  }
 }
 ```
 
 #### Balance Sheets:
 
-> `GET` https://merlin.stevenxie.me/api/sheets/1318605/0001564590-18-002956
+`GET` https://merlin.stevenxie.me/api/sheets/1318605/0001564590-18-002956
 
 ```jsonc
 [
@@ -84,7 +87,7 @@ _A system for accessing company finance data from
 
 #### Financial Notes:
 
-> `GET` https://merlin.stevenxie.me/api/notes/1318605/0001564590-18-002956
+`GET` https://merlin.stevenxie.me/api/notes/1318605/0001564590-18-002956
 
 ```jsonc
 [
