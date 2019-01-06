@@ -1,0 +1,32 @@
+{
+  "name": "merlin-client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "yarn serve",
+    "serve": "vue-cli-service serve",
+    "build": "NODE_ENV=production vue-cli-service build",
+    "lint": "NODE_ENV=production vue-cli-service lint './src/**/*.{vue,js}' && prettier --write -l './src/**/*.{vue,sass,css}' './*.{js,json}'"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "epic-spinners": "^1.0.4",
+    "json-format-highlight": "^1.0.1",
+    "vue": "^2.5.21",
+    "vue-router": "^3.0.2",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.2.2",
+    "@vue/cli-plugin-eslint": "^3.2.2",
+    "@vue/cli-service": "^3.2.3",
+    "@vue/eslint-config-prettier": "^4.0.1",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.12.0",
+    "eslint-plugin-vue": "^5.1.0",
+    "node-sass": "^4.11.0",
+    "prettier": "^1.15.3",
+    "sass-loader": "^7.1.0",
+    "vue-template-compiler": "^2.5.21"
+  }
+}

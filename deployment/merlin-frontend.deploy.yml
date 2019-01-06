@@ -4,15 +4,15 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: merlin-api
+  name: merlin-frontend
   namespace: default
 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: merlin-api
-      tier: backend
+      app: merlin-frontend
+      tier: frontend
       track: stable
   strategy:
     type: RollingUpdate
@@ -23,14 +23,14 @@ spec:
   template:
     metadata:
       labels:
-        app: merlin-api
-        tier: backend
+        app: merlin-frontend
+        tier: frontend
         track: stable
     spec:
       containers:
-        - name: merlin-api
-          image: "stevenxie/merlin-api"
+        - name: merlin-frontend
+          image: "stevenxie/merlin-frontend"
           imagePullPolicy: Always
           ports:
-            - name: api
-              containerPort: 3000
+            - name: http
+              containerPort: 80

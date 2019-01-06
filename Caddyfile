@@ -1,0 +1,23 @@
+## Serve static files from '/srv/'.
+:80 {
+	## Rewrite all requests without file extensions to '/'.
+	rewrite {
+		ext /
+		to  /
+	}
+
+	## Configure headers:
+	header / -Server
+
+	## Set cache-control headers for assets (4h).
+	header /js Cache-Control "public, max-age=14400"
+	header /css Cache-Control "public, max-age=14400"
+	header /img Cache-Control "public, max-age=14400"
+
+	root /srv
+}
+
+## Internal healthcheck endpoint. Used to detect if Caddy is online.
+localhost:200 {
+	status 200 /
+}

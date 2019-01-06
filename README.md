@@ -22,7 +22,9 @@ _A system for accessing company finance data from
 
 ### Examples
 
-#### `GET` https://merlin.stevenxie.me/api/sheets/1318605/0001564590-18-002956
+| Balance Sheets                                                            |
+| ------------------------------------------------------------------------- |
+| `GET` https://merlin.stevenxie.me/api/sheets/1318605/0001564590-18-002956 |
 
 ```jsonc
 [
@@ -48,7 +50,11 @@ _A system for accessing company finance data from
 ]
 ```
 
-#### `GET` https://merlin.stevenxie.me/api/notes/1318605/0001564590-18-002956
+<br />
+
+| Financial Notes                                                          |
+| ------------------------------------------------------------------------ |
+| `GET` https://merlin.stevenxie.me/api/notes/1318605/0001564590-18-002956 |
 
 ```jsonc
 [
@@ -71,7 +77,9 @@ _A system for accessing company finance data from
 ## TODOs
 
 - [x] Add an endpoint for parsing a balance sheet corresponding to a CIK +
-      accNum.
+      accession number.
+- [x] Add an endpoint for parsing financial notes corresponding to a CIK +
+      accession number.
 - [ ] Add an endpoint for mapping tickers to CIKs.
 - [ ] Add an endpoint for listing accNums for a given CIK.
 - [ ] Add result caching using Redis to improve speeds.

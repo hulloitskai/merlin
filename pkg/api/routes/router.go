@@ -11,7 +11,6 @@ import (
 // Router matches requests to the routes defined in this package.
 type Router struct {
 	*Config
-
 	hr httprouter.Router
 }
 
@@ -37,7 +36,8 @@ func NewRouter(cfg *Config) (*Router, error) {
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	r.hr.ServeHTTP(w, req)
+	handlerFunc := corsMiddleware(r.hr.ServeHTTP)
+	handlerFunc(w, req)
 }
 
 func (r *Router) registerRoutes() {
