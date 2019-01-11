@@ -6,15 +6,14 @@ STAT_CMD="git diff --name-status"
 STAT_BEFORE="$($STAT_CMD | wc -l)"
 
 
-## [GO CODE CHECK]
 ## Check if the code is formatted and linted correctly.
-check() {
+lint() {
   echo "Performing code check:"
-  make check || return $?
+  make lint || return $?
 }
-check || exit $?
+lint || exit $?
 
-## [git-secret]
+## Hide secrets using git-secret.
 git-secret() {
   ## Determine if git-secret is active for this project.
   if [ -z "$(which git-secret)" ]; then return 0; fi # git-secret not installed
@@ -26,14 +25,6 @@ git-secret() {
   git secret hide -m || return 2
 }
 git-secret || exit $?
-
-## [YARN LINT]
-## Lint client code.
-yarn-lint() {
-  echo # visual separator
-  cd client/ && yarn lint
-}
-yarn-lint || exit $?
 
 
 ## [AFTER]

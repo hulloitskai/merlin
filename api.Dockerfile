@@ -7,7 +7,7 @@ FROM golang:alpine AS builder
 ARG BINARY="merlin"
 
 ## Install dependencies.
-RUN apk add upx gcc musl-dev
+RUN apk add upx gcc musl-dev git make
 
 ## Copy source files.
 WORKDIR /build
@@ -16,9 +16,8 @@ COPY . .
 ## Configure build environment.
 ENV GO111MODULE=on
 
-## Install external + app dependencies. gcc musl-dev
-RUN apk add git make
-RUN go version && make dl
+## Install app dependencies.
+RUN go version && make go-install
 
 ## Create production binary.
 RUN make build
@@ -52,10 +51,10 @@ RUN apk add ca-certificates
 ## Copy production artifacts to /api.
 COPY --from=builder /build/${BINARY} /usr/bin/${BINARY}
 
-COPY ./scripts/healthcheck.sh /usr/bin/healthcheck.sh
+COPY ./scripts/healthcheck.sh /usr/bin/healthcheck
 ENV ENDPOINT=http://localhost:3000
 HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=1 \
-  CMD [ "healthcheck.sh" ]
+  CMD [ "healthcheck" ]
 
 ## Expose API port.
 EXPOSE 3000

@@ -4,7 +4,7 @@
 ## It is not meant for use in production deployments. See the deployment/
 ## directory for production deployment configurations.
 
-version: "3.7"
+version: "3.4"
 
 services:
   frontend:

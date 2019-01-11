@@ -1,0 +1,31 @@
+## This docker-compose config file is used to define test variations of the
+## images in this repository.
+
+version: "3.4"
+
+services:
+  frontend_test:
+    image: "stevenxie/merlin-frontend:${VERSION}"
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+      args:
+        BUILD_VERSION: "${VERSION}"
+      cache_from:
+        - stevenxie/merlin-frontend:latest
+        - alpine:3.8
+    container_name: frontend_test
+    command: ["-validate"]
+
+  api_test:
+    image: "golang:1.11"
+    container_name: api_test
+    working_dir: "/app"
+    command: ["make", "test"]
+    environment:
+      - GO_ENV=production
+      - GO111MODULE=on
+    volumes:
+      - type: bind
+        source: .
+        target: /app

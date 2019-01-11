@@ -1,11 +1,9 @@
 language: go
-
 go:
   - '1.11'
 
 os:
   - linux
-
 services: docker
 
 env:
@@ -17,6 +15,7 @@ env:
     - RELEASE_BRANCH=master
 
     - DOCKER_COMPOSE_VERSION="1.23.2"
+    - GOBIN="$GOPATH/bin"
     - BIN_PATH=/opt/bin
 
 cache:
@@ -28,64 +27,18 @@ cache:
     ## Preserve Go module cache.
     - $GOPATH/pkg/mod/cache
 
-
 ## Install external tools.
 before_install:
-  ## Install golint.
-  - |
-    echo "Contents of $GOBIN:" && ls -l $GOBIN && \
-    if ! command -v golint > /dev/null; then
-      rm -rf $GOLINT_BIN && \
-      echo "Installing 'golint'..." && \
-      GO111MODULE=off go get -u golang.org/x/lint/golint
-    fi && \
-    command -v golint
-  ## Configure $BIN_PATH for third-party binaries.
-  - |
-    mkdir -p $BIN_PATH && \
-    export PATH=$BIN_PATH:$PATH && \
-    echo "Contents of $BIN_PATH:" && ls -l $BIN_PATH
-  ## Install docker-compose.
-  - |
-    if [ ! -x $BIN_PATH/docker-compose ]; then
-      echo "Installing docker-compose..." && \
-      VERSION="docker-compose-$(uname -s)-$(uname -m)" && \
-      curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/${VERSION}" > docker-compose && \
-      chmod +x docker-compose && \
-      mv docker-compose $BIN_PATH && \
-      echo done
-    fi && \
-    docker-compose version
-  ## Install kubectl.
-  - |
-    if ! command -v kubectl > /dev/null; then
-      echo "Installing kubectl..." && \
-      VERSION="$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)" && \
-      curl -LO "https://storage.googleapis.com/kubernetes-release/release/${VERSION}/bin/linux/amd64/kubectl" && \
-      chmod +x ./kubectl && \
-      mv kubectl ${BIN_PATH}/kubectl && \
-      echo done
-    fi && \
-    kubectl version --client
-  ## Fetch git tags.
-  - git fetch --tags
+  - export PATH=$BIN_PATH:$PATH
+  - ./scripts/tools.sh
+  - git fetch --tags  # fetch git tags.
 
 
 ## Install dependencies.
-install:
-  - export GO111MODULE=on
-  - make dl       # install Go module dependencies
+install: export GO111MODULE=on && make ci-install
 
 ## Run tests.
-script:
-  - make check         # check Go code
-  - make dk-pull       # allows for caching from previous images during build
-  - make dk-build      # build Docker images
-  - ./scripts/test.sh  # run Docker tests
-
-# ## Upload code coverage results.
-# after_success:
-#   - bash <(curl -s https://codecov.io/bash)
+script: make ci-test
 
 ## Deploy to Docker Hub and Kubernetes.
 deploy:
@@ -94,3 +47,7 @@ deploy:
   skip-cleanup: true
   on:
     all_branches: true
+
+# ## Upload code coverage results.
+# after_success:
+#   - bash <(curl -s https://codecov.io/bash)

@@ -1,363 +1,176 @@
 ## ----- VARIABLES -----
-PKG_NAME = $(shell basename "$$(pwd)")
-ifeq ($(shell ls -1 go.mod 2> /dev/null),go.mod) # use module name from go.mod, if applicable
-	PKG_NAME = $(shell basename "$$(cat go.mod | grep module | awk '{print $$2}')")
+## Go module name.
+MODULE = $(shell basename "$$(pwd)")
+ifeq ($(shell ls -1 go.mod 2> /dev/null),go.mod)
+	MODULE = $(shell cat go.mod | grep module | awk '{print $$2}')
 endif
 
-VERSION = $(shell git describe --tags | cut -c 2-)
+## Program version.
+VERSION = "unset"
+ifneq ($(shell git describe --tags 2> /dev/null),)
+	VERSION = $(shell git describe --tags | cut -c 2-)
+endif
 
-## Directory of the 'main' package.
-MAINDIR = "."
-## Output directory to place artifacts from 'build' and 'build-all'.
-OUTDIR  = "."
-
-## Enable Go modules for this project.
-MODULE    = true
-## Enable `go generate` for this project.
-GENERATE   = false
-## Enable goreleaser for this project.
-GORELEASER = false
-## Enable git-secret for this project.
-SECRETS    = false
-
-## Custom Go linker flags:
-LDFLAGS = -X github.com/stevenxie/$(PKG_NAME)/internal/info.Version=$(VERSION)
+## Custom Go linker flag.
+LDFLAGS = -X $(MODULE)/internal/info.Version=$(VERSION)
 
 
-## Testing config:
-TEST_TIMEOUT = 20s
-COVER_OUT    = coverage.out
 
+## ----- TARGETS ------
+## Generic:
+.PHONY: default version setup install build clean run lint test review release \
+        help
 
-## ----- COMMANDS -----
-.PHONY: default setup init version
-
-## Default target when no arguments are given to make (build and run program).
-default: build-run
-
-## Sets up this project on a new device.
-setup: hooks-setup
-	@if [ "$(SECRETS)" == true ]; then $(SECRETS_REVEAL_CM); fi
-	@if [ "$(MODULE)" == true ]; \
-	 then $(DL_CMD); \
-	 else $(GET_CMD); \
-	 fi
-
-## Initializes this project from scratch.
-## Variables: MODPATH
-init: mod-init secrets-init goreleaser-init
-
-version:
+default: run
+version: ## Show project version (derived from 'git describe').
 	@echo $(VERSION)
 
+setup: go-setup ## Set up this project on a new device.
+	@echo "Configuring githooks..." && \
+	 git config core.hooksPath .githooks && \
+	 echo done && \
+	 echo "Installing client dependencies..." && cd client && yarn install
 
-## [Git, git-secret]
-.PHONY: hooks-setup secrets-hide secrets-reveal
+install: go-install ## Install project dependencies.
+	@echo "Installing client dependencies..." && cd client && yarn install
 
-## Configure Git to use .githooks (for shared githooks).
-hooks-setup:
-	@echo "Configuring githooks..."
-	@git config core.hooksPath .githooks && echo "done"
+build: go-build ## Build project.
+clean: go-clean ## Clean build artifacts.
+run: go-run ## Run project (development).
+	@echo "Starting client..." && cd client && yarn start
 
-## Initialize git-secret.
-secrets-init:
-	@if [ "$(SECRETS)" == true ]; then \
-	   echo "Initializing git-secret..." && \
-	   git-secret init; \
-	 fi
+lint: go-lint ## Lint and check code.
+	@echo "Linting client code..." && cd client && yarn lint
 
-## Hide modified secret files using git-secret.
-secrets-hide:
-	@echo "Hiding modified secret files..."
-	@git secret hide -m
+test: go-test ## Run tests.
+review: go-review ## Lint code and run tests.
+	@echo "Linting client code..." && cd client && yarn lint
 
-## Reveal files hidden by git-secret.
-SECRETS_REVEAL_CM = git secret reveal
-secrets-reveal:
-	@echo "Revealing hidden secret files..."
-	@$(SECRETS_REVEAL_CM)
+release: ## Release / deploy this project.
+	@echo "No release procedure defined."
 
-
-## [Go: modules]
-.PHONY: mod-init verify dl vendor tidy update fix
-
-## Initializes a Go module in the current directory.
-## Variables: MODPATH (module source path)
-MODPATH =
-mod-init:
-	@if [ "$(MODULE)" == true ]; then \
-	   echo "Initializing Go module..." && \
-	   go mod init $(MODPATH); \
-	 fi
-
-## Verifies that Go module dependencies are satisfied.
-VERIFY_CMD = echo "Verifying Go module dependencies..." && go mod verify
-verify:
-	@$(VERIFY_CMD)
-
-## Downloads Go module dependencies.
-DL_CMD = echo "Downloading Go module dependencies..." && \
-           go mod download && echo "done"
-dl:
-	@$(DL_CMD)
-
-## Vendors Go module dependencies.
-vendor:
-	@echo "Vendoring Go module dependencies..."
-	@go mod vendor && echo "done"
-
-## Tidies Go module dependencies.
-tidy:
-	@echo "Tidying Go module dependencies..."
-	@go mod tidy && echo "done"
-
-## Installs and updates package dependencies.
-## Variables:
-##   UMODE (Update Mode, choose between 'patch' and 'minor').
-UMODE =
-update:
-	@echo 'Updating module dependencies with "go get -u"...'
-	@go get -u $(UMODE) && echo "done"
-
-## Fixes deprecated Go code using "go fix", by rewriting old APIS to use
-## newer ones.
-fix:
-	@echo 'Fixing deprecated Go code with "go fix"... '
-	@go fix && echo "done"
+## Show usage for the targets in this Makefile.
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+	   awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
 
-## [Go: legacy setup]
-.PHONY: get
+## Go:
+.PHONY: go-deps go-bench go-setup go-install go-build go-clean go-run go-lint \
+        go-test go-review
 
-## Downloads and installs all subpackages (legacy).
-GET_CMD = echo "Installing dependencies... " && \
-            go get ./... && echo "done"
-get:
-	@$(GET_CMD)
-
-
-## [Go: setup, running]
-## [Go: setup, running]
-.PHONY: build build-all build-run generate run clean install
-
-## Runs the built program.
-## Sources .env.sh if it exists.
-## Variables: SRCENV (boolean which determines whether or not to check and
-##            source .env.sh)
-SRCENV = true
-OUTPATH = $(OUTDIR)/$(PKG_NAME)
-RUN_CMD = \
-	if [ -f ".env.sh" ] && [ "$(SRCENV)" == true ]; then \
-	  echo 'Configuring environment variables by sourcing ".env.sh"...' && \
-	  . .env.sh && \
-	  printf "done\n\n"; \
-	fi && \
-	if [ -f "$(OUTPATH)" ]; then \
-	  echo 'Running "$(PKG_NAME)"...' && \
-	  ./$(OUTPATH); \
-	else \
-	  echo 'run: could not find program "$(OUTPATH)".' >&2; \
-	  exit 1; \
-	fi
-run:
-	@$(RUN_CMD)
-
-generate:
-	@if [ "$(GENERATE)" == true ]; then \
-	   echo "Generating Go code using 'go generate'..." && \
-	   go generate ./...; \
-	 fi
-
-## Builds (compiles) the program for this system.
-## Variables:
-##   - OUTDIR (output directory to place built binaries)
-##   - MAINDIR (directory of the main package)
-##   - BUILDARGS (additional arguments to pass to "go build")
-BUILDARGS =
-BUILD_CMD = \
-	echo 'Building "$(PKG_NAME)" for this system...' && \
-	go build \
-	  -o "$$(echo $(OUTDIR) | tr -s '/')/$(PKG_NAME)" \
-	  -ldflags "$(LDFLAGS)" \
-	  $(BUILDARGS) $(MAINDIR) && \
-	echo "done"
-build: generate
-	@$(BUILD_CMD)
-
-## Builds (cross-compiles) the program for all systems.
-## Variables:
-##   - OUTDIR (output path to place built binaries)
-##   - MAINDIR (directory of the main package)
-##   - BUILDARGS (additional arguments to pass to "go build")
-build-all: generate
-	@echo 'Building "$(PKG_NAME)" for all systems:'
-	@for GOOS in darwin linux windows; do \
-	   for GOARCH in amd64 386; do \
-	     printf "Building GOOS=$$GOOS GOARCH=$$GOARCH... " && \
-	     OUTNAME="$(PKG_NAME)-$$GOOS-$$GOARCH"; \
-	     if [ $$GOOS == windows ]; then \
-	       OUTNAME="$$OUTNAME.exe"; \
-	     fi; \
-	     GOBUILD_OUT="$$(GOOS=$$GOOS GOARCH=$$GOARCH && \
-	       go build \
-	         -o "$$(echo $(OUTDIR) | tr -s '/')/$$OUTNAME" \
-	         -ldflags "$(LDFLAGS)" \
-	         $(BUILDARGS) $(MAINDIR) 2>&1)"; \
-	     if [ -n "$$GOBUILD_OUT" ]; then \
-	       printf "\nError during build:\n" >&2 && \
-	        echo "$$GOBUILD_OUT" >&2 && \
-	        exit 1; \
-	     else printf "\tdone\n"; \
-	     fi; \
-	   done; \
-	 done
-
-## Builds (compiles) the program for this system, and runs it.
-## Sources .env.sh before running, if it exists.
-build-run:
-	@$(BUILD_CMD) && echo "" && $(RUN_CMD)
-
-## Cleans build artifacts (executables, object files, etc.).
-clean:
-	@echo 'Cleaning build artifacts with "go clean"...'
-	@go clean && echo "done"
-
-## Installs the program using "go install".
-install:
-	@echo 'Installing program using "go install"... '
-	@go install && echo "done"
-
-
-## [Go: code checking]
-.PHONY: fmt lint vet check
-
-## Formats the source code using "goimports".
-FMT_CMD = \
-	if ! command -v goimports > /dev/null; then \
-	  echo '"goimports" is required to format source code.'; \
-	else \
-	  echo 'Formatting source code using "goimports"...' && \
-	  goimports -l -w . && echo "done"; \
-	fi
-fmt:
-	@$(FMT_CMD)
-
-## Lints the source code using "golint".
-LINT_CMD = \
-	if ! command -v golint > /dev/null; then \
-	  echo '"golint" is required to lint soure code.' >&2; \
-	else \
-	  echo 'Formatting source code using "golint"...' && \
-	  golint ./... && echo "done"; \
-	fi
-lint:
-	@$(LINT_CMD)
-
-## Checks for suspicious code using "go vet".
-VET_CMD = echo 'Checking for suspicious code using "go vet"...' && \
-	      go vet && echo "done"
-vet:
-	@$(VET_CMD)
-
-## Checks for formatting, linting, and suspicious code.
-CHECK_CMD = $(FMT_CMD) && echo "" && $(LINT_CMD) && echo "" && $(VET_CMD)
-check:
-	@$(CHECK_CMD)
-
-
-## [Go: testing]
-.PHONY: test test-v test-race test-race-v bench bench-v
-
-TEST_CMD = go test ./... -coverprofile=$(COVER_OUT) \
-                         -covermode=atomic \
-                         -timeout=$(TEST_TIMEOUT)
-test:
-	@echo "Testing:"
-	@$(TEST_CMD)
-test-v:
-	@echo "Testing (verbose):"
-	@$(TEST_CMD) -v
-
-TEST_CMD_RACE = $(TEST_CMD) -race
-test-race:
-	@echo "Testing (race):"
-	@$(TEST_CMD_RACE)
-test-race-v:
-	@echo "Testing (race, verbose):"
-	@$(TEST_CMD_RACE) -v
-
-BENCH_CMD = $(TEST_CMD) ./... -run=^$$ -bench=. -benchmem
-bench:
-	@echo "Benchmarking:"
-	@$(BENCH_CMD)
-bench-v:
-	@echo "Benchmarking (verbose):"
-	@$(BENCH_CMD) -v
-
-
-## [Go: reviewing]
-.PHONY: review review-race review-bench
-__review_base:
-	@$(VERIFY_CMD) && echo "" && $(CHECK_CMD) && echo ""
-
-## Formats, checks, and tests the code.
-review: __review_base test
-review-v: __review_base test-v
-
-## Like "review", but tests for race conditions.
-review-race: __review_base test-race
-review-race-v: __review_base test-race-v
-
-## Like "review-race", but includes benchmarks.
-review-bench: review-race bench
-review-bench-v: review-race bench-v
-
-
-## [Goreleaser]
-.PHONY: goreleaser-init release
-
-goreleaser-init:
-	@if [ "$(GORELEASER)" == true ]; then \
-	   echo "Initializing goreleaser..." && \
-	   goreleaser init; \
-	 fi
-
-release:
-	@echo "Releasing with 'goreleaser'..." && goreleaser --rm-dist
-
-snapshot:
-	@echo "Making snapshot with 'goreleaser'..." && \
-	   goreleaser --snapshot --rm-dist
-
-
-## [Docker]
-.PHONY: dk-build dk-push dk-build-push dk-retag dk-up dk-build-up dk-down \
-        dk-logs
-
-DK = docker
-DKCMP = docker-compose
-DKCMP_ENV = VERSION=$(VERSION) $(DKCMP)
-
-## SVC refers to the target Docker Compose service.
-SVC =
-dk-build:
-	@echo "Building images..." && \
-	 $(DKCMP_ENV) build --parallel $(SVC) && \
-	 echo done && $(DK_RETAG_CMD)
-
-dk-push:
-	@echo "Pushing images to registry..." && \
-	 $(DKCMP_ENV) push $(SVC) && VERSION=latest $(DKCMP) push $(SVC) && \
+go-deps: ## Verify and tidy project dependencies.
+	@echo "Verifying module dependencies..." && \
+	 go mod verify && \
+	 echo "Tidying module dependencies..." && \
+	 go mod tidy && \
 	 echo done
 
-dk-build-push: dk-build dk-push
+go-bench: ## Run benchmarks.
+	@echo "Running benchmarks with 'go test -bench=.'..." && \
+	 $(__TEST) -run=^$$ -bench=. -benchmem ./...
 
-dk-pull:
+go-setup: go-install go-deps
+go-install:
+	@echo "Downloading module dependencies..." && \
+	 go mod download && \
+	 echo done
+
+BUILDARGS = -ldflags "$(LDFLAGS)" $(BARGS)
+BDIR = .
+go-build:
+	@echo "Building with 'go build $(BARGS)'..." && \
+	 go build $(BUILDARGS) $(BDIR) && \
+	 echo done
+
+go-clean:
+	@echo "Cleaning with 'go clean'..." && \
+	 go clean $(BDIR) && \
+	 echo done
+
+go-run:
+	@echo "Running with 'go run'..." && \
+	 go run $(BUILDARGS) $(BDIR)
+
+go-lint:
+	@if command -v goimports > /dev/null; then \
+	   echo "Formatting code with 'goimports'..." && goimports -w .; \
+	 else \
+	   echo "'goimports' not installed, formatting code with 'go fmt'..." && \
+	   go fmt .; \
+	 fi && \
+	 if command -v golint > /dev/null; then \
+	   echo "Linting code with 'golint'..." && golint ./...; \
+	 else \
+	   echo "'golint' not installed, skipping linting step."; \
+	 fi && \
+	 echo "Checking code with 'go vet'..." && go vet ./... && \
+	 echo done
+
+COVERFILE = coverage.out
+TIMEOUT   = 20s
+__TEST = go test -coverprofile="$(COVERFILE)" -covermode=atomic \
+               -timeout="$(TIMEOUT)" $(TARGS)
+go-test:
+	@echo "Running tests with 'go test':" && $(__TEST) ./....
+
+go-review: go-lint go-test
+
+
+## git-secret:
+.PHONY: secrets-hide secrets-reveal
+secrets-hide: ## Hides modified secret files using git-secret.
+	@echo "Hiding modified secret files..." && git secret hide -m
+
+secrets-reveal: ## Reveals secret files that were hidden using git-secret.
+	@echo "Revealing hidden secret files..." && git secret reveal
+
+
+## CI:
+.PHONY: ci-install ci-test ci-deploy
+ci-install: go-install dk-pull
+ci-test: dk-test
+	@$(DKCMP_VERSION) up --no-start && make dk-tags
+
+ci-deploy:
+	@make dk-push && \
+	 for deploy in $(DEPLOYS); do \
+	   kubectl patch deployment "$$deploy" \
+	     -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"date\":\"$$(date +'%s')\"}}}}}"; \
+	 done
+
+
+## Docker:
+.PHONY: dk-pull dk-push dk-build dk-build-push dk-clean dk-tags dk-up \
+        dk-build-up dk-down dk-logs dk-test
+
+DK    = docker
+DKCMP = docker-compose
+DKCMP_VERSION = VERSION="$(VERSION)" $(DKCMP)
+DKCMP_LATEST  = VERSION=latest $(DKCMP)
+
+dk-pull: ## Pull latest Docker images from registry.
 	@echo "Pulling latest images from registry..." && \
-	 VERSION=latest $(DKCMP) pull $(SVC)
+	 $(DKCMP_LATEST) pull $(SVC)
 
-DK_RETAG_CMD = echo "Tagging versioned images with ':latest'..." && \
-	IMAGES="$$($(DKCMP_ENV) config | egrep image | awk '{print $$2}')" && \
+dk-push: ## Push new Docker images to registry.
+	@echo "Pushing images to registry..." && \
+	 $(DKCMP_VERSION) push $(SVC) && \
+	 $(DKCMP_LATEST) push $(SVC) && \
+	 echo done
+
+dk-build: ## Build and tag Docker images.
+	@echo "Building images..." && \
+	 $(DKCMP_VERSION) build --parallel --compress $(SVC) && \
+	 echo done && make dk-tags
+
+dk-clean: ## Clean up unused Docker data.
+	@echo "Cleaning unused data..." && $(DK) system prune
+
+dk-build-push: dk-build dk-push ## Build and push new Docker images.
+dk-tags: ## Tag versioned Docker images with ':latest'.
+	@echo "Tagging versioned images with ':latest'..." && \
+	IMAGES="$$($(DKCMP_VERSION) config | egrep image | awk '{print $$2}')" && \
 	for image in $$IMAGES; do \
 	  if [ -z "$$($(DK) images -q "$$image" 2> /dev/null)" ]; then \
 	    continue; \
@@ -366,21 +179,27 @@ DK_RETAG_CMD = echo "Tagging versioned images with ':latest'..." && \
 	  $(DK) tag "$$image" "$$LAT_TAG"; \
 	done && \
 	echo done
-dk-retag:
-	@$(DK_RETAG_CMD)
 
-dk-up:
-	@echo "Bringing up services..." && $(DKCMP_ENV) up -d $(SVC) && echo done
+__DK_UP = $(DKCMP_VERSION) up -d
+dk-up: ## Start up containerized services.
+	@echo "Bringing up services..." && $(__DK_UP) $(SVC) && echo done
 
-dk-build-up:
+dk-build-up: ## Build new images, then start them.
 	@echo "Building and bringing up services..." && \
-	 $(DKCMP_ENV) up --build -d $(SVC) && \
+	 $(__DK_UP) --build $(SVC) && \
 	 echo done
 
-dk-down:
-	@echo "Bringinging down services..." && \
-	 $(DKCMP_ENV) down $(SVC) && \
+dk-down: ## Shut down containerized services.
+	@echo "Bringing down services..." && \
+	 $(DKCMP_VERSION) down $(SVC) && \
 	 echo done
 
-dk-logs:
-	@$(DKCMP_ENV) logs $(SVC)
+dk-logs: ## Show logs for containerized services.
+	@$(DKCMP_VERSION) logs $(SVC)
+
+DKCMP_TEST = $(DKCMP_VERSION) -f docker-compose.test.yml
+dk-test: ## Test using 'docker-compose.test.yml'.
+	@if [ -s docker-compose.test.yml ]; then \
+	   echo "Running containerized service tests..." && \
+	   $(DKCMP_TEST) up; \
+	 fi

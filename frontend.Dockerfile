@@ -61,10 +61,10 @@ VOLUME /etc/.caddy
 WORKDIR /srv
 
 ## Define healthcheck.
-COPY ./scripts/healthcheck.sh /usr/bin/healthcheck.sh
+COPY ./scripts/healthcheck.sh /usr/bin/healthcheck
 ENV HEALTH_ENDPOINT=http://localhost:200
 HEALTHCHECK --interval=30s --timeout=30s --start-period=45s --retries=2 \
-  CMD [ "healthcheck.sh" ]
+  CMD [ "healthcheck" ]
 
 ## Expose ports, define entrypoint:
 EXPOSE 80
