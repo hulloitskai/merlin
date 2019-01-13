@@ -11,7 +11,7 @@ services:
     image: "stevenxie/merlin-frontend:${VERSION}"
     build:
       context: .
-      dockerfile: frontend.Dockerfile
+      dockerfile: ./client/Dockerfile
       args:
         BUILD_VERSION: "${VERSION}"
       cache_from:
@@ -27,7 +27,7 @@ services:
     image: "stevenxie/merlin-api:${VERSION}"
     build:
       context: .
-      dockerfile: api.Dockerfile
+      dockerfile: ./api/Dockerfile
       args:
         BUILD_VERSION: "${VERSION}"
       cache_from:

@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 
 	hr "github.com/julienschmidt/httprouter"
-	"github.com/stevenxie/merlin/internal/info"
+	"github.com/stevenxie/merlin/api/internal/info"
 )
 
 func registerIndex(r *hr.Router, logger *zap.SugaredLogger) {
@@ -28,12 +28,15 @@ type indexHandler struct {
 }
 
 func newIndexHandler(logger *zap.SugaredLogger) *indexHandler {
-	info := apiInfo{
-		ID:      fmt.Sprintf("%s-api-%s", info.Namespace, info.Version),
-		Version: info.Version,
+	ai := apiInfo{Version: info.Version}
+	if ai.Version != "unset" {
+		ai.ID = fmt.Sprintf("%s-api-%s", info.Namespace, info.Version)
+	} else {
+		ai.ID = fmt.Sprintf("%s-api", info.Namespace)
 	}
+
 	return &indexHandler{
-		template: info,
+		template: ai,
 	}
 }
 

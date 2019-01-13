@@ -6,8 +6,8 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/stevenxie/merlin/pkg/api/routes"
-	"github.com/stevenxie/merlin/pkg/scrape"
+	"github.com/stevenxie/merlin/api/pkg/api/routes"
+	"github.com/stevenxie/merlin/api/pkg/scrape"
 	ess "github.com/unixpickle/essentials"
 )
 

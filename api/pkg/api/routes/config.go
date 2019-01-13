@@ -3,8 +3,8 @@ package routes
 import (
 	"go.uber.org/zap"
 
-	"github.com/stevenxie/merlin/pkg/models"
-	"github.com/stevenxie/merlin/pkg/models/balance"
+	"github.com/stevenxie/merlin/api/pkg/models"
+	"github.com/stevenxie/merlin/api/pkg/models/balance"
 )
 
 // A Config is used to configure a Router.

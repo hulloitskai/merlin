@@ -6,10 +6,11 @@ import (
 	"strconv"
 	"strings"
 
-	gq "github.com/PuerkitoBio/goquery"
-	"github.com/stevenxie/merlin/pkg/models/balance"
-	ess "github.com/unixpickle/essentials"
 	"golang.org/x/text/runes"
+
+	gq "github.com/PuerkitoBio/goquery"
+	"github.com/stevenxie/merlin/api/pkg/models/balance"
+	ess "github.com/unixpickle/essentials"
 )
 
 // ScrapeBalanceSheets scrapes EDGAR for the balance sheets for the filing

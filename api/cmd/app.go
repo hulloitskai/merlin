@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/spf13/pflag"
-	"github.com/stevenxie/merlin/internal/info"
-	"github.com/stevenxie/merlin/pkg/api"
+	"github.com/stevenxie/merlin/api/internal/info"
+	"github.com/stevenxie/merlin/api/pkg/api"
 	ess "github.com/unixpickle/essentials"
 )
 

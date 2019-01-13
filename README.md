@@ -18,8 +18,8 @@ _A system for accessing company finance data from
 | `/`                           | API server information.                                         |
 | `/filings/:ticker/`           | Company filings (CIK and accession numbers) for a given ticker. |
 | `/filings/:ticker/latest/10k` | Latest 10-K filing for a given ticker.                          |
-| `/sheets/:cik/:accNum`        | Balance sheet data for a given CIK and accession number.        |
-| `/notes/:cik/:accNum`         | Financial notes for a given CIK and accession number.           |
+| `/sheets/:cik/:acc-num`       | Balance sheet data for a given CIK and accession number.        |
+| `/notes/:cik/:acc-num`        | Financial notes for a given CIK and accession number.           |
 
 > When accessing `merlin` on the production server at
 > https://merlin.stevenxie.me, all API requests must be prefixed with `/api`.

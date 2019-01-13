@@ -4,26 +4,26 @@
 
 FROM golang:alpine AS builder
 
-ARG BINARY="merlin"
+ARG BINARY="api"
 
 ## Install dependencies.
 RUN apk add upx gcc musl-dev git make
 
 ## Copy source files.
 WORKDIR /build
-COPY . .
-
-## Configure build environment.
-ENV GO111MODULE=on
+COPY ./api ./api
+COPY ./.git ./.git
 
 ## Install app dependencies.
-RUN go version && make go-install
+ENV GO111MODULE=on
+WORKDIR /build/api
+RUN go version && make install
 
-## Create production binary.
-RUN make build
+## Create production binary at '/build/dist/$BINARY'
+RUN make build BARGS="-o ../dist/$BINARY"
 
 ## Compress binary with UPX.
-RUN upx -9 "$BINARY"
+RUN upx -9 "../dist/$BINARY"
 
 
 ##################################################
@@ -32,9 +32,8 @@ RUN upx -9 "$BINARY"
 
 FROM alpine:3.8 as production
 
-ARG BINARY="merlin"
+ARG BINARY="api"
 ARG BUILD_VERSION="unset"
-ENV GO_ENV="production"
 
 ## Labels:
 LABEL maintainer="Steven Xie <dev@stevenxie.me>"
@@ -49,10 +48,10 @@ LABEL org.label-schema.version="$BUILD_VERSION"
 RUN apk add ca-certificates
 
 ## Copy production artifacts to /api.
-COPY --from=builder /build/${BINARY} /usr/bin/${BINARY}
+COPY --from=builder /build/dist/${BINARY} /usr/bin/${BINARY}
 
 COPY ./scripts/healthcheck.sh /usr/bin/healthcheck
-ENV ENDPOINT=http://localhost:3000
+ENV HEALTH_ENDPOINT=http://localhost:3000
 HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=1 \
   CMD [ "healthcheck" ]
 
@@ -60,5 +59,5 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=1 \
 EXPOSE 3000
 
 ## Set entrypoint.
-ENV BINARY=$BINARY
+ENV BINARY=$BINARY GO_ENV="production"
 ENTRYPOINT "$BINARY"

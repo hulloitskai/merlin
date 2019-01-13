@@ -5,8 +5,8 @@ FROM node:10-alpine AS builder
 
 ## Build frontend:
 ## Copy source, install dependencies.
-WORKDIR /build/
-COPY ./client/ .
+WORKDIR /build
+COPY ./client .
 RUN yarn install
 
 ## Build from source.
@@ -51,7 +51,7 @@ RUN apk add ca-certificates
 ## Copy Caddy entrypoint, frontend, and config files:
 COPY --from=builder /build/caddy /usr/bin/caddy
 COPY --from=builder /build/dist/ /srv/
-COPY ./Caddyfile /etc/Caddyfile
+COPY ./client/Caddyfile /etc/Caddyfile
 
 ## Setup Caddy environment and persistent volume:
 ENV CADDYPATH=/etc/.caddy

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/stevenxie/merlin/cmd"
+	"github.com/stevenxie/merlin/api/cmd"
 )
 
 func main() {

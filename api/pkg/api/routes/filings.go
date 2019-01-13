@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap"
 
 	hr "github.com/julienschmidt/httprouter"
-	"github.com/stevenxie/merlin/pkg/models"
+	"github.com/stevenxie/merlin/api/pkg/models"
 	ess "github.com/unixpickle/essentials"
 )
 

@@ -8,7 +8,7 @@ import (
 
 	"golang.org/x/net/html/charset"
 
-	"github.com/stevenxie/merlin/pkg/models"
+	"github.com/stevenxie/merlin/api/pkg/models"
 	ess "github.com/unixpickle/essentials"
 )
 

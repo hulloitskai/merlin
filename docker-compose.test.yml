@@ -8,7 +8,7 @@ services:
     image: "stevenxie/merlin-frontend:${VERSION}"
     build:
       context: .
-      dockerfile: frontend.Dockerfile
+      dockerfile: ./client/Dockerfile
       args:
         BUILD_VERSION: "${VERSION}"
       cache_from:
@@ -27,5 +27,5 @@ services:
       - GO111MODULE=on
     volumes:
       - type: bind
-        source: .
+        source: ./api
         target: /app
