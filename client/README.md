@@ -1,29 +1,14 @@
-# yarn
+# client
+
+_The [`merlin`][merlin] web client._
 
 ## Project setup
-```
-yarn install
+
+```bash
+yarn install  # installs dependencies
+yarn dev      # starts development server
+yarn build    # compiles and minifies for production
+yarn lint     # lints and fixes source code
 ```
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
-
-### Compiles and minifies for production
-```
-yarn run build
-```
-
-### Run your tests
-```
-yarn run test
-```
-
-### Lints and fixes files
-```
-yarn run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+[merlin]: https://github.com/stevenxie/merlin

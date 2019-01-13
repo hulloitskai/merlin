@@ -1,15 +1,17 @@
 # charts
 
-This directory contains [Helm](https://helm.sh) charts for this project.
+_[Helm](https://helm.sh) charts for [`merlin`][merlin]._
 
-You can install these from the packaged `.tar.gz` files
-[from the latest Github release](https://github.com/stevenxie/merlin/releases).
+## Installation
 
-For example, to install `merlin@0.4.3`, you can simply run:
+You can install these charts from the repository located at `https://stevenxie.github.io/helm-charts/`:
 
 ```bash
-helm install -n merlin -f values.yaml \
-  https://github.com/stevenxie/merlin/releases/download/v0.4.3/merlin-0.1.0.tgz
+## Install as a repository named 'stevenxie'.
+helm repo add stevenxie https://stevenxie.github.io/helm-charts/
+
+## Install the chart.
+helm install -f values.yaml -n merlin stevenxie/merlin
 ```
 
 ## Configuration
@@ -26,3 +28,5 @@ the target namespace, and configure a `values.yaml` with an appropriate
 ingress:
   host: merlin.stevenxie.me # example
 ```
+
+[merlin]: https://github.com/stevenxie/merlin
