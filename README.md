@@ -102,6 +102,14 @@ _A system for accessing company finance data from
 
 <br />
 
+## Deployment
+
+To deploy `merlin` with Kubernetes, see the Kubernetes resource configurations
+in the `deployment/` directory.
+
+To deploy `merlin` using Helm, please see the README at
+[`deployment/charts/`](https://github.com/stevenxie/merlin/tree/master/deployment/charts).
+
 ## TODOs
 
 - [x] Add an endpoint for parsing a balance sheet corresponding to a CIK +

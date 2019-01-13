@@ -34,3 +34,11 @@ spec:
           ports:
             - name: api
               containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: api
+          readinessProbe:
+            httpGet:
+              path: /
+              port: api
