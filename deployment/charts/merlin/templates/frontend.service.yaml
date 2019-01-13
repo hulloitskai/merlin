@@ -1,0 +1,30 @@
+{{- $name:= include "frontend.name" . -}}
+{{- $fullName := include "frontend.fullname" . -}}
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: {{ $fullName }}
+  labels:
+    app.kubernetes.io/name: {{ $name }}
+    helm.sh/chart: {{ include "chart.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- range $key, $val := .Values.services.frontend.labels }}
+    {{ $key }}: {{ $val | quote }}
+  {{- end }}
+
+spec:
+  type: {{ .Values.services.frontend.type }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.services.frontend.httpPort }}
+      targetPort: http
+    - name: https
+      protocol: TCP
+      port: {{ .Values.services.frontend.httpsPort }}
+      targetPort: https
+  selector:
+    app.kubernetes.io/name: {{ $name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

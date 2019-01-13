@@ -1,0 +1,70 @@
+{{- $name := include "frontend.name" . }}
+{{- $fullName := include "frontend.fullname" . }}
+{{- define "frontend-deploy-labels" }}
+  {{- range $key, $val := .Values.deployments.frontend.labels }}
+    {{- $key }}: {{ $val | quote }}
+  {{- end }}
+{{- end }}
+{{- $labels := include "frontend-deploy-labels" . -}}
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ $fullName }}
+  labels:
+    app.kubernetes.io/name: {{ $name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "chart.chart" . }}
+{{ $labels | indent 4 }}
+
+spec:
+  replicas: {{ .Values.deployments.frontend.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ $name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{ $labels | indent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ $name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+{{ $labels | indent 8 }}
+    spec:
+      containers:
+        - name: {{ $name }}
+          image: {{ .Values.deployments.frontend.image | quote }}
+          imagePullPolicy: {{ .Values.deployments.frontend.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- with .Values.deployments.frontend.resources }}
+          resources:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.deployments.frontend.nodeSelector }}
+      nodeSelector:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployments.frontend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 -}}
+      {{- end }}
+      {{- with .Values.deployments.frontend.tolerations }}
+      tolerations:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}

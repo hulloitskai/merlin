@@ -13,11 +13,9 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 
 ## Golang and Makefile require indents.
-[{*.go,*.svg,Makefile,Caddyfile}]
+[{*.go,*.svg,*.tpl,Makefile,Caddyfile}]
 indent_style = tab
-
-[*.{go,svg}]
 tab_width = 2
 
-[{Makefile,Caddyfile}]
+[{*.tpl,Makefile,Caddyfile}]
 tab_width = 4

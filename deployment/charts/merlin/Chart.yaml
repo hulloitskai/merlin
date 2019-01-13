@@ -1,0 +1,14 @@
+apiVersion: v1
+version: "0.1.0"
+
+name: merlin
+appVersion: "0.4.3"
+description: A system for accessing company finance data from EDGAR.
+
+home: https://github.com/stevenxie/merlin
+sources:
+  - https://github.com/stevenxie/merlin
+
+maintainers:
+  - name: Steven Xie
+    email: dev@stevenxie.me

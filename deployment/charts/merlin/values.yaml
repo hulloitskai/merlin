@@ -1,0 +1,59 @@
+# Default values for chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+deployments:
+  api:
+    image: stevenxie/merlin-api
+    imagePullPolicy: Always
+    replicaCount: 1
+    labels:
+      tier: backend
+    resources: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+
+  frontend:
+    image: stevenxie/merlin-frontend
+    imagePullPolicy: Always
+    replicaCount: 1
+    labels:
+      tier: frontend
+    resources: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+
+
+services:
+  api:
+    type: ClusterIP
+    port: 3000
+    labels:
+      tier: backend
+  frontend:
+    type: ClusterIP
+    httpPort: 80
+    httpsPort: 443
+    labels:
+      tier: frontend
+
+
+ingress:
+  enabled: true
+  host: merlin.example.127.0.0.1.xip.io
+  annotations: {}
+    # ingress.kubernetes.io/custom-response-headers: "X-Service:merlin"
+  tls: []
+
+  api:
+    annotations:
+      traefik.ingress.kubernetes.io/rule-type: PathPrefixStrip
+    path: /api
+    labels: []
+
+  frontend:
+    annotations: {}
+    path: ""
+    labels: []

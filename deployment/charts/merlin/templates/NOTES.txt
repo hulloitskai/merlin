@@ -1,0 +1,11 @@
+{{- if .Values.ingress.enabled }}
+Merlin has been started, and is located at:
+
+    {{ .Values.ingress.host }}{{ .Values.ingress.frontend.path }}
+
+The API is is located at the path: {{ .Values.ingress.api.path | default "/" }}
+{{- else }}
+Traefik has been started. You can find out the port numbers being used by traefik by running:
+
+    $ kubectl describe svc {{ template "traefik.fullname" . }} --namespace {{ .Release.Namespace }}
+{{- end -}}
