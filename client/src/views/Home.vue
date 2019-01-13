@@ -64,35 +64,35 @@ export default {
     };
   },
   methods: {
-    preload() {
-      this.apiData = undefined;
-      this.loading = true;
+    validate() {
+      const { cik, accNum } = this;
+      if (!cik || !accNum) {
+        alert("both cik and accession number fields must be filled out.");
+        return false;
+      }
+      return true;
     },
     loadSheets() {
-      const { cik, accNum, api } = this;
-      if (!cik || !accNum) {
-        alert("Both CIK and accession number fields must be filled out.");
-        return;
-      }
-      this.preload();
-
-      api.getBalanceSheet(cik, accNum).then(data => {
-        this.loading = false;
-        this.apiData = data;
-      });
+      const { validate, awaitData, api, cik, accNum } = this;
+      if (!validate()) return;
+      awaitData(api.getBalanceSheet(cik, accNum));
     },
     async loadNotes() {
-      const { cik, accNum, api } = this;
-      if (!cik || !accNum) {
-        alert("Both CIK and accession number fields must be filled out.");
-        return;
-      }
-      this.preload();
-
-      api.getFinancialNotes(cik, accNum).then(data => {
-        this.loading = false;
+      const { validate, awaitData, api, cik, accNum } = this;
+      if (!validate()) return;
+      awaitData(api.getFinancialNotes(cik, accNum));
+    },
+    async awaitData(promise) {
+      this.apiData = undefined;
+      this.loading = true;
+      try {
+        const data = await promise;
         this.apiData = data;
-      });
+      } catch (err) {
+        this.apiData = { error: `API request failed: ${err}` };
+      } finally {
+        this.loading = false;
+      }
     },
   },
   components: {

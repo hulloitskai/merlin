@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## Only deploy if on correct branch.
-printf "Branches: $TRAVIS_BRANCH=%s $RELEASE_BRANCH=%s" \
+printf "Branches: $TRAVIS_BRANCH=%s $RELEASE_BRANCH=%s\n" \
   $TRAVIS_BRANCH $RELEASE_BRANCH && \
 
 if [ "$TRAVIS_BRANCH" != "$RELEASE_BRANCH" ]; then
