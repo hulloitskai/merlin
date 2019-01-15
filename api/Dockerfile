@@ -6,13 +6,13 @@ FROM golang:alpine AS builder
 
 ARG BINARY="api"
 
-## Install dependencies.
+## Install external adependencies.
 RUN apk add upx gcc musl-dev git make
 
 ## Copy source files.
 WORKDIR /build
-COPY ./api ./api
-COPY ./.git ./.git
+COPY ./api/ ./api/
+COPY ./.git/ ./.git/
 
 ## Install app dependencies.
 ENV GO111MODULE=on

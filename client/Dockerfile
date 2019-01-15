@@ -13,7 +13,6 @@ RUN yarn install
 ENV NODE_ENV="production"
 RUN yarn build
 
-
 ## Build Caddy entrypoint:
 ## Install dependencies.
 RUN apk add bash upx

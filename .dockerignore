@@ -1,7 +1,8 @@
 ## [Repository]
-/*merlin*
-!/*merlin*.*
-/*merlin*.exe
+## API:
+/api/*merlin*
+!/api/*merlin*.*
+/api/*merlin*.exe
 
 ## Client:
 /client/dist/
@@ -12,12 +13,13 @@
 
 
 ## [Go]
-/dist/
-coverage.out
+/api/dist/
+/api/coverage.out
 
 
 ## [JS]
-jsconfig.json
+/client/jsconfig.json
+/client/dist/
 
 
 ## [Git]

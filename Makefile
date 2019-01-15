@@ -1,6 +1,6 @@
 ## ----- VARIABLES -----
 ## Program version.
-VERSION = "unset"
+VERSION = "none"
 ifneq ($(shell git describe --tags 2> /dev/null),)
 	VERSION = $(shell git describe --tags | cut -c 2-)
 endif
@@ -37,7 +37,7 @@ clean: ## Clean build artifacts.
 run: ## Run project (development).
 	@if command -v parallel > /dev/null; then \
 	   parallel --lb --tagstring '{= s:^cd ::; s: &&.*$$::; =}' ::: \
-	     "cd api    && make run" "cd client && make run"; \
+	     "cd api && make run" "cd client && make run"; \
 	 else \
 	   echo "Cannot run client and api in parallel ('GNU parallel' not found)."; \
 	 fi

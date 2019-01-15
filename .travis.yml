@@ -13,26 +13,14 @@ env:
   global:
     - DEPLOYMENTS="merlin-api merlin-frontend"
     - RELEASE_BRANCH=master
-
     - DOCKER_COMPOSE_VERSION="1.23.2"
-    - GOBIN="$GOPATH/bin"
-    - BIN_PATH=/opt/bin
 
-cache:
-  directories:
-    ## Preserve external tools.
-    - $BIN_PATH
-    ## Preserve golint executable.
-    - $GOBIN
-    ## Preserve Go module cache.
-    - $GOPATH/pkg/mod/cache
-
-## Install external tools.
+# Install external tools.
 before_install:
-  - export PATH=$BIN_PATH:$PATH
+  - export GOBIN="${GOPATH}/bin" BINPATH=/opt/bin
+  - export PATH=$BINPATH:$PATH
   - ./scripts/tools.sh
-  - git fetch --tags  # fetch git tags.
-
+  - git fetch --tags
 
 ## Install dependencies.
 install: export GO111MODULE=on && make ci-install
@@ -51,3 +39,12 @@ deploy:
 # ## Upload code coverage results.
 # after_success:
 #   - bash <(curl -s https://codecov.io/bash)
+
+cache:
+  directories:
+    ## Preserve external tools.
+    - $BIN_PATH
+    ## Preserve golint executable.
+    - $GOBIN
+    ## Preserve Go module cache.
+    - ${GOPATH}/pkg/mod/cache

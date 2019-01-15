@@ -28,12 +28,16 @@ version: ## Show project version (derived from 'git describe').
 setup: go-setup ## Set up this project on a new device.
 	# @echo "Configuring githooks..." && \
 	#  git config core.hooksPath .githooks && \
-	#  echo done && \
+	#  echo done
 
 install: go-install ## Install project dependencies.
 build: go-build ## Build project.
 clean: go-clean ## Clean build artifacts.
-run: go-run ## Run project (development).
+
+GENV = development
+run: ## Run project (development).
+	@GO_ENV="$(GENV)" && $(MAKE) go-run
+
 lint: go-lint ## Lint and check code.
 test: go-test ## Run tests.
 review: go-review ## Lint code and run tests.
@@ -110,9 +114,9 @@ go-lint:
 COVERFILE = coverage.out
 TIMEOUT   = 20s
 TARGS = -race
-__TEST = go test -coverprofile="$(COVERFILE)" -covermode=atomic \
-                 -timeout="$(TIMEOUT)" $(TARGS)
+__TEST = go test ./... -coverprofile="$(COVERFILE)" -covermode=atomic \
+                       -timeout="$(TIMEOUT)" $(TARGS)
 go-test:
-	@echo "Running tests with 'go test':" && $(__TEST) ./....
+	@echo "Running tests with 'go test':" && $(__TEST)
 
 go-review: go-lint go-test

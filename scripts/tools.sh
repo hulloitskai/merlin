@@ -3,17 +3,21 @@
 set -e  # exit on failure
 
 ## Install golint.
+mkdir -p "$GOBIN"
 echo "Contents of $GOBIN:" && ls -l $GOBIN
+ls -l "$GOBIN" || true
+
 if ! command -v golint > /dev/null; then
-  rm -rf $GOLINT_BIN
+  rm -rf "${GOBIN}/golint"
   echo "Installing 'golint'..."
   GO111MODULE=off go get -u golang.org/x/lint/golint
 fi
-command -v golint
+echo "golint: $(command -v golint)"
 
-## Configure $BIN_PATH for third-party binaries.
-mkdir -p $BIN_PATH
-echo "Contents of $BIN_PATH:" && ls -l $BIN_PATH
+
+## Configure $BINPATH for third-party binaries.
+mkdir -p $BINPATH
+echo "Contents of $BINPATH:" && ls -l $BINPATH
 
 ## Install docker-compose.
 if [ ! -x $BIN_PATH/docker-compose ]; then
@@ -21,10 +25,10 @@ if [ ! -x $BIN_PATH/docker-compose ]; then
   VERSION="docker-compose-$(uname -s)-$(uname -m)"
   curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/${VERSION}" > docker-compose
   chmod +x docker-compose
-  mv docker-compose $BIN_PATH
+  mv docker-compose $BINPATH
   echo done
 fi
-docker-compose version
+echo "docker-compose: $(docker-compose version)"
 
 ## Install kubectl.
 if ! command -v kubectl > /dev/null; then
@@ -32,9 +36,9 @@ if ! command -v kubectl > /dev/null; then
   VERSION="$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)"
   curl -LO "https://storage.googleapis.com/kubernetes-release/release/${VERSION}/bin/linux/amd64/kubectl"
   chmod +x ./kubectl
-  mv kubectl ${BIN_PATH}/kubectl
+  mv kubectl ${BINPATH}/kubectl
   echo done
 fi
-kubectl version --client
+echo "kubectl: $(kubectl version --client)"
 
 set +e
