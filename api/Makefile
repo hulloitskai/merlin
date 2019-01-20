@@ -6,7 +6,7 @@ ifeq ($(shell ls -1 go.mod 2> /dev/null),go.mod)
 endif
 
 ## Program version.
-VERSION = "unset"
+VERSION = latest
 ifneq ($(shell git describe --tags 2> /dev/null),)
 	VERSION = $(shell git describe --tags | cut -c 2-)
 endif

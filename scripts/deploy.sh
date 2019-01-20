@@ -5,7 +5,7 @@ printf "Branches: $TRAVIS_BRANCH=%s $RELEASE_BRANCH=%s\n" \
   $TRAVIS_BRANCH $RELEASE_BRANCH && \
 
 if [ "$TRAVIS_BRANCH" != "$RELEASE_BRANCH" ]; then
-  echo "Not on branch '$RELEASE_BRANCH', aborting."
+  echo "Not on branch '$RELEASE_BRANCH', skipping deployment."
   exit 0
 fi
 

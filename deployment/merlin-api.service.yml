@@ -17,4 +17,3 @@ spec:
     - name: api
       protocol: TCP
       port: 3000
-      targetPort: api
