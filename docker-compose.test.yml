@@ -15,7 +15,7 @@ services:
         - stevenxie/merlin-frontend:latest
         - alpine:3.8
     container_name: frontend_test
-    command: ["-validate"]
+    command: ["nginx", "-t"]
 
   api_test:
     image: "golang:1.11"

@@ -1,6 +1,6 @@
 ## ----- VARIABLES -----
 ## Program version.
-VERSION = "unset"
+VERSION = latest
 ifneq ($(shell git describe --tags 2> /dev/null),)
 	VERSION = $(shell git describe --tags | cut -c 2-)
 endif
@@ -9,11 +9,13 @@ endif
 
 ## ----- TARGETS ------
 ## Generic:
-.PHONY: default version release help
+.PHONY: default version lint release help
 
 default: charts-version
 version: ## Show project version (derived from 'git describe').
 	@echo $(VERSION)
+
+lint: charts-lint
 
 release: charts-version charts-package
 
@@ -30,13 +32,20 @@ CVER = unset
 ifneq ($(VERSION),unset)
 	CVER = $(shell git describe --abbrev=0 --tags | cut -c 2-)
 endif
-__CDIRS = $$(ls -l | egrep '^d' | awk '{print $$NF}')
+__CDIRS = $(shell \
+	unset vcdirs && \
+	for cdir in $$(ls -l | egrep '^d' | awk '{print $$NF}'); do \
+	  if [ -s "$$cdir/Chart.yaml" ]; then \
+	    vcdirs="$$vcdirs $$cdir"; \
+	  fi; \
+	done && \
+	echo "$$vcdirs" \
+)
+
 charts-version:
 	@echo "Updating 'appVersion' in 'Chart.yaml' files..." && \
 	 for cdir in $(__CDIRS); do \
-	   cd $$cdir && \
-	   if [ ! -s Chart.yaml ]; then continue; fi && \
-	   cp Chart.yaml Chart.tmp.yaml && \
+	   cd $$cdir && cp Chart.yaml Chart.tmp.yaml && \
 	   sed -e 's/^appVersion: .*$$/appVersion: "$(CVER)"/' \
 	     Chart.tmp.yaml > Chart.yaml && \
 	   rm Chart.tmp.yaml && \
@@ -44,7 +53,12 @@ charts-version:
 	 done && \
 	 echo done
 
-charts-package:
+charts-lint:
+	@echo "Linting charts with Helm..." && \
+	 for cdir in $(__CDIRS); do helm lint $$cdir; done && \
+	 echo done
+
+charts-package: charts-lint
 	@echo "Packaging charts..." && \
 	 for cdir in $(__CDIRS); do cd $$cdir && helm package .; done && \
 	 echo done

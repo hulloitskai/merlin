@@ -34,8 +34,7 @@ services:
       tier: backend
   frontend:
     type: ClusterIP
-    httpPort: 80
-    httpsPort: 443
+    port: 80
     labels:
       tier: frontend
 

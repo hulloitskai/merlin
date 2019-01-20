@@ -20,7 +20,6 @@ spec:
     - name: api
       protocol: TCP
       port: {{ .Values.services.api.port }}
-      targetPort: api
   selector:
     app.kubernetes.io/name: {{ $name }}
     app.kubernetes.io/instance: {{ .Release.Name }}

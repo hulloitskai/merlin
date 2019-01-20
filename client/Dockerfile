@@ -3,35 +3,23 @@
 ##################################################
 FROM node:10-alpine AS builder
 
-## Build frontend:
+## Install build dependencies.
+RUN apk add make
+
 ## Copy source, install dependencies.
-WORKDIR /build
-COPY ./client .
-RUN yarn install
+WORKDIR /build/
+COPY ./client/ .
+RUN make install
 
-## Build from source.
+## Build for production.
 ENV NODE_ENV="production"
-RUN yarn build
-
-## Build Caddy entrypoint:
-## Install dependencies.
-RUN apk add bash upx
-
-## Install Caddy (with plugins) from bash script.
-ENV PLUGINS=""
-RUN wget -qO- https://getcaddy.com | bash -s personal $PLUGINS
-
-## Move Caddy to /build/.
-RUN mv /usr/local/bin/caddy .
-
-## Compress Caddy using UPX.
-RUN upx -9 caddy
+RUN make build
 
 
 ##################################################
 ## PRODUCTION IMAGE
 ##################################################
-FROM alpine:3.8 AS production
+FROM nginx:1-alpine AS production
 
 ARG BUILD_VERSION="unset"
 
@@ -44,27 +32,18 @@ LABEL org.label-schema.description="Merlin Frontend Server"
 LABEL org.label-schema.vcs-url="https://github.com/stevenxie/merlin"
 LABEL org.label-schema.version="$BUILD_VERSION"
 
-## Install external dependencies.
-RUN apk add ca-certificates
+## Copy frontend, and config files:
+COPY --from=builder /build/dist/ /usr/share/nginx/html/
+COPY ./client/nginx.conf /etc/nginx/conf.d/default.conf
 
-## Copy Caddy entrypoint, frontend, and config files:
-COPY --from=builder /build/caddy /usr/bin/caddy
-COPY --from=builder /build/dist/ /srv/
-COPY ./client/Caddyfile /etc/Caddyfile
-
-## Setup Caddy environment and persistent volume:
-ENV CADDYPATH=/etc/.caddy
-VOLUME /etc/.caddy
-
-## Serve from /srv using default index.html.
-WORKDIR /srv
+## Configure default nginx variables.
+ENV NGINX_SERVER_NAME="default_server" NGINX_CONFIG="html"
 
 ## Define healthcheck.
-COPY ./scripts/healthcheck.sh /usr/bin/healthcheck
-ENV HEALTH_ENDPOINT=http://localhost:200
+COPY ./scripts/healthcheck.sh /usr/bin/healthcheck.sh
+ENV HEALTH_ENDPOINT=http://localhost:80
 HEALTHCHECK --interval=30s --timeout=30s --start-period=45s --retries=2 \
-  CMD [ "healthcheck" ]
+  CMD [ "healthcheck.sh" ]
 
-## Expose ports, define entrypoint:
+## Expose HTTP port.
 EXPOSE 80
-ENTRYPOINT ["caddy", "-conf", "/etc/Caddyfile", "-log", "stdout"]
