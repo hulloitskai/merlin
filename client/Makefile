@@ -56,7 +56,7 @@ js-install:
 js-build:
 	@echo "Building static files for production..." && yarn build
 js-run:
-	@echo "Starting development server with..." && yarn dev
+	@echo "Starting development server..." && yarn dev
 js-lint:
 	@echo "Linting code with 'yarn lint'..." && yarn lint
 js-review: js-lint
