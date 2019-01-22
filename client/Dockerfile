@@ -12,7 +12,6 @@ COPY ./client/ .
 RUN make install
 
 ## Build for production.
-ENV NODE_ENV="production"
 RUN make build
 
 

@@ -13,7 +13,7 @@ services:
         BUILD_VERSION: "${VERSION}"
       cache_from:
         - stevenxie/merlin-frontend:latest
-        - alpine:3.8
+        - nginx:1-alpine
     container_name: frontend_test
     command: ["nginx", "-t"]
 
