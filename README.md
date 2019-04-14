@@ -1,3 +1,8 @@
+> ## Archive Notice
+>
+> Since this project is no longer needed by the [RCFTA](https://www.rcfta.ca/),
+> I'm now deprecating it. This project will no longer be maintained.
+
 # merlin
 
 [![Github: Tag][tag-img]][tag]
