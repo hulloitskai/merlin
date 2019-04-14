@@ -1,6 +1,4 @@
-language: go
-go:
-  - '1.11'
+language: bash
 
 os:
   - linux
@@ -12,12 +10,10 @@ env:
   ##   - GH_TOKEN, GH_KUBECONFIG_PATH
   global:
     - DEPLOYMENTS="merlin-api merlin-frontend"
-    - RELEASE_BRANCH=master
-    - DOCKER_COMPOSE_VERSION="1.23.2"
 
 # Install external tools.
 before_install:
-  - export GOBIN="${GOPATH}/bin" BINPATH=/opt/bin
+  - export BINPATH=/opt/bin
   - export PATH=$BINPATH:$PATH
   - ./scripts/tools.sh
   - git fetch --tags
@@ -44,7 +40,3 @@ cache:
   directories:
     ## Preserve external tools.
     - $BINPATH
-    ## Preserve golint executable.
-    - $GOBIN
-    ## Preserve Go module cache.
-    - ${GOPATH}/pkg/mod/cache

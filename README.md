@@ -1,11 +1,11 @@
 # merlin
 
+_A system for accessing company finance data from
+[EDGAR](https://www.sec.gov/edgar/aboutedgar.htm)._
+
 [![Github: Tag][tag-img]][tag]
 [![Travis: Build][travis-img]][travis]
 [![Go Report Card][grp-img]][grp]
-
-_A system for accessing company finance data from
-[EDGAR](https://www.sec.gov/edgar/aboutedgar.htm)._
 
 | Deployment                  | API                             |
 | --------------------------- | ------------------------------- |

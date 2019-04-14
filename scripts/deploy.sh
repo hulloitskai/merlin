@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 
+## Options:
+RELEASE_BRANCH=master
+
+
 ## Only deploy if on correct branch.
 printf "Branches: $TRAVIS_BRANCH=%s $RELEASE_BRANCH=%s\n" \
-  $TRAVIS_BRANCH $RELEASE_BRANCH && \
+  $TRAVIS_BRANCH $RELEASE_BRANCH
 
 if [ "$TRAVIS_BRANCH" != "$RELEASE_BRANCH" ]; then
-  echo "Not on branch '$RELEASE_BRANCH', skipping deployment."
+  echo "Not on branch '$RELEASE_BRANCH', aborting."
   exit 0
 fi
 

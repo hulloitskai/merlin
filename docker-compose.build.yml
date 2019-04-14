@@ -1,4 +1,5 @@
-## This docker-compose file is to be used for development only.
+## This docker-compose config file is used to define Cbuild processes for the
+## images in this repository.
 
 version: "3.4"
 
@@ -14,10 +15,6 @@ services:
         - stevenxie/merlin-frontend:latest
         - nginx:1-alpine
     container_name: frontend
-    networks:
-      - public
-    ports:
-      - "8080:80" # for development
 
   api:
     image: "stevenxie/merlin-api:${VERSION}"
@@ -30,12 +27,6 @@ services:
         - stevenxie/merlin-api:latest
         - alpine:3.8
     container_name: api
-    environment:
-      - GO_ENV=development
-    networks:
-      - public
-    ports:
-      - "3000:3000" # for development
 
 
 networks:

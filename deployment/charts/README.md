@@ -4,11 +4,11 @@ _[Helm](https://helm.sh) charts for [`merlin`][merlin]._
 
 ## Installation
 
-You can install these charts from the repository located at `https://stevenxie.github.io/helm-charts/`:
+You can install these charts from the repository located at `https://charts.stevenxie.me`.
 
 ```bash
-## Install as a repository named 'stevenxie'.
-helm repo add stevenxie https://stevenxie.github.io/helm-charts/
+## Add the repository.
+helm repo add stevenxie https://charts.stevenxie.me
 
 ## Install the chart.
 helm install -f values.yaml -n merlin stevenxie/merlin
